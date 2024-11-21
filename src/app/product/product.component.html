@@ -1,0 +1,26 @@
+<div class="p-2 m-4 bg-zinc-50 rounded-md w-max shadow-md hover:scale-110 transition-transform cursor-pointer">
+    <img class="h-52"
+        src="https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1904&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    <div class="flex flex-col">
+        <p class="font-bold">Product Name</p>
+        <div>
+            <div class="flex gap-1">
+                @for (star of stars; track star; let i = $index) {
+                <button (mouseenter)="hover = i + 1" (mouseleave)="hover = rating" (click)="setRating(i + 1)"
+                    class="transition-transform hover:scale-110 focus:outline-none">
+                    <lucide-icon [img]="Star" [color]="(i + 1) <= (hover || rating) ? '#FFD700' : '#000'"
+                        [attr.stroke]="'#FFD700'" class="w-4 h-4" />
+                </button>
+                }
+                <!-- <span class="ml-2 text-slate-600">
+                    {{ rating > 0 ? rating + ' of ' + totalStars : 'Rate!' }}
+                </span> -->
+            </div>
+        </div>
+        <div class="font-semibold">
+            <span class="text-xs">$</span>
+            <span class="text-xl">20</span>
+            <span class="text-xs">45</span>
+        </div>
+    </div>
+</div>
