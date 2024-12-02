@@ -1,108 +1,124 @@
-<div class="flex flex-wrap md:flex-nowrap p-4">
-  <!-- Image Section -->
-  <div class="w-full md:w-1/2 p-4 flex justify-center">
-    <img alt="Product Image"
-         class="h-60 md:h-80 object-cover rounded-lg"
-         src="https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1904&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
-  </div>
+<ng-template #loading>
+  <p>Loading product details...</p>
+</ng-template>
+<div *ngIf="product; else loading" class="flex flex-col pb-16">
+  <div class="flex flex-wrap md:flex-nowrap p-4">
+    <div class="w-full md:w-1/3 p-4 flex justify-center">
+      <img [src]="product?.imageUrls[0]"
+           alt="Product Image"
+           class=" w-full md:w-2/3 object-cover rounded-lg">
+    </div>
 
-  <!-- Details Section -->
-  <div class="w-full md:w-1/2 flex flex-col pt-5 px-4">
-    <div class="text-2xl font-bold">Product Name</div>
+    <div class="w-full md:w-2/3 flex flex-col pt-5 px-4 ">
+      <div class="text-2xl font-bold">{{ product?.productName }}</div>
 
-    <!-- Ratings -->
-    <div class="mt-3">
-      <div>Ratings:</div>
-      <div class="flex flex-col">
-        <div class="flex gap-1 mt-1">
-          @for (star of stars; track star; let i = $index) {
-            <button (mouseenter)="hover = i + 1" (mouseleave)="hover = rating" (click)="setRating(i + 1)"
-                    class="transition-transform hover:scale-110 focus:outline-none">
-              <lucide-icon [img]="Star" [color]="(i + 1) <= (hover || rating) ? '#FFD700' : '#000'"
-                           [attr.stroke]="'#FFD700'" class="w-4 h-4"/>
-            </button>
-          }
-        </div>
-        <div class=" mt-3">
-          <div class="border-b">
-            <div class="flex">
-          <span class="text-slate-600 ">
-          {{ rating > 0 ? rating + ' of ' + totalStars : 'No Reviews!' }}
-          </span>
-              <button
-                (click)="toggleAccordion(1)"
-                class=" flex justify-between items-center w-max text-left font-medium text-gray-900 focus:outline-none">
-                <svg [ngClass]="{'rotate-180': activeAccordion === 1}"
-                     class="w-5 h-5 transition-transform transform"
-                     fill="none"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24"
-                     xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 9l-7 7-7-7"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2">
-                  </path>
-                </svg>
-              </button>
+      <div class="mt-3">
+        <div>Rating:</div>
+        <div class="flex flex-col">
+          <div class="flex gap-1 mt-1">
+            @for (star of stars; track star; let i = $index) {
+              <div
+                class="transition-transform focus:outline-none">
+                <lucide-icon [img]="Star" [color]="(i + 1) <= ( product?.averageRating ) ? '#f59e0b' : '#000'"
+                             class="w-4 h-4"/>
+              </div>
+            }
+
+          </div>
+          <div class=" mt-3">
+            <div class="border-b">
+              <div class="flex">
+              </div>
             </div>
-            <div *ngIf="activeAccordion === 1" class="transition-all duration-300">
-              <div class="text-gray-600">
-                <div class="mx-auto mt-7">
-                  <h2 class="text-xl font-bold mb-4">Reviews Distribution</h2>
-                  <div *ngFor="let star of starsDistribution; let i = index" class="flex items-center mb-2">
-                    <!-- Star Label -->
-                    <div class="w-20 text-gray-700">
-                      {{ 5 - i }} Star
-                    </div>
+          </div>
+        </div>
 
-                    <!-- Progress Bar -->
-                    <div class="flex-grow bg-gray-200 rounded-full h-4 mx-2 relative">
-                      <div
-                        [style.width.%]="(star.count / totalReviews) * 100"
-                        class="bg-amber-500 h-full rounded-full">
-                      </div>
-                    </div>
+      </div>
 
-                    <!-- Percentage -->
-                    <div class="text-sm text-gray-600">
-                      ({{ ((star.count / totalReviews) * 100) | number: '1.0-0' }}%)
-                    </div>
-                  </div>
+      <div class="font-bold mt-3">
+        <span class="text-sm">£</span>
+        <span class="text-2xl">{{ product?.price | number: '1.0-2' | splitPrice:'whole' }}</span>
+        <span class="text-sm">{{ product?.price | number: '1.0-2' | splitPrice:'decimal' }}</span>
+      </div>
+
+      <div class="mt-4">
+        <div>Description:</div>
+        <div class="text-sm text-slate-700 mt-1">
+          {{
+            product?.description
+          }}
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-1 border-r border-gray-300 p-4">
+      <div class="transition-all duration-300">
+        <div class="text-gray-600">
+          <div class="mx-auto mt-4">
+            <h2 class="text-xl font-bold mb-4">
+              Product Reviews ({{ product.reviews.length }})
+            </h2>
+            <div *ngFor="let star of starsDistribution; let i = index" class="flex items-center mb-2">
+              <div class="w-20 text-gray-700">
+                {{ i+1 }} Star
+              </div>
+
+              <div class="flex-grow bg-gray-200 rounded-full h-4 mx-2 relative">
+                <div
+                  [style.width.%]="totalReviews > 0 ? (star.count / totalReviews) * 100 : 0"
+                  class="bg-amber-500 h-full rounded-full">
                 </div>
-
+              </div>
+              <div class="text-sm text-gray-600">
+                ({{ totalReviews > 0 ? (((star.count / totalReviews) * 100) | number: '1.0-0') : '0' }}%)
               </div>
             </div>
           </div>
         </div>
       </div>
-
-    </div>
-
-    <!-- Price -->
-    <div class="font-bold mt-3">
-      <span class="text-sm">$</span>
-      <span class="text-2xl">20</span>
-      <span class="text-sm">45</span>
-    </div>
-
-    <!-- Description -->
-    <div class="mt-4">
-      <div>Description:</div>
-      <div class="text-sm text-slate-700 mt-1">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-        aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-        eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
+      <div class="flex mt-4 w-full justify-end">
+        <button class="border border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:text-white hover:bg-blue-600 focus:outline-none"
+        (click)="showModal = true">
+          Write a Review
+        </button>
       </div>
     </div>
-
-    <!-- Add to Cart Button -->
-    <div class="mt-4">
-      <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none">
-        Add to Cart
-      </button>
+    <div class="lg:col-span-2">
+      <div class="mx-auto mt-4">
+        @if (product.reviews.length > 0) {
+          @for (review of product.reviews; track review.id) {
+            <div class="bg-gray-100 p-4 rounded-lg mb-4">
+              <div class="flex flex-col justify-between">
+                <div class="font-bold">{{ review.userName }}</div>
+                <div class="flex gap-1">
+                  <div *ngFor="let star of stars; let i = index" class="transition-transform focus:outline-none">
+                    <lucide-icon [img]="Star" [color]="(i + 1) <= review.rating ? '#f59e0b' : '#000'" class="w-4 h-4"/>
+                  </div>
+                </div>
+              </div>
+              <div class="text-sm text-gray-600 mt-2">
+                {{ review.content }}
+              </div>
+            </div>
+          }
+        } @else {
+        <h2 class="text-xl font-bold mb-4">No Reviews Yet</h2>
+        }
+      </div>
     </div>
   </div>
+  @if(showModal) {
+  <app-review-modal
+    [productId]="product.id"
+    (close)="showModal = false"
+    (submitReview)="hanldeReviewSubmit($event)"></app-review-modal>
+  }
+
 </div>
